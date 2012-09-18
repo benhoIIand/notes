@@ -13,14 +13,14 @@ window.notes = function() {
 			'done': 0,
 			'text': txt
 		}
-	};
+	}
 
 	var setTodoList = function() {
 		localStorage.setItem(storageName, JSON.stringify(todoList));
-	};
+	}
 
-	var getListItems = function() {
-		var data = JSON.parse(localStorage.getItem(storageName));
+	var parseListItems = function() {
+		var data = getListItems();
 		if(data.length > 0){
 			todoList = data;
 			$.each(todoList, function(i, note){
@@ -29,12 +29,16 @@ window.notes = function() {
 		} else {
 			writeToNotes(createNote('Hi there. This is a simple to do list. Just type, hit return and make your list!'));
 		}
-	};
+	}
+
+	var getListItems = function() {
+		return JSON.parse(localStorage.getItem(storageName));
+	}
 
 	var setListItems = function(note) {
 		todoList.push(note);
 		setTodoList();
-	};
+	}
 
 	var writeToNotes = function(note, append) {
 		var done = note.done ? ' done' : '';
@@ -46,21 +50,21 @@ window.notes = function() {
 		}
 		resetNoteInput();
 		noteNum++;
-	};
+	}
 
 	var removeListItem = function(index) {
 		var position = todoList.indexOf(index);
 		todoList.splice(position, 1);
 		setTodoList();
-	};
+	}
 
 	var focusEventOn = function() {
 		$(document).on('keydown', focusOnInput);
-	};
+	}
 
 	var focusEventOff = function() {
 		$(document).off('keydown');
-	};
+	}
 
 	var changeNoteState = function() {
 		var _this = $(this);
@@ -75,28 +79,28 @@ window.notes = function() {
 			todoList[index].done = 0;
 		}
 		setTodoList();
-	};
+	}
 
 	var removeNote = function() {
 		var index = $(this).parent().data('id');
 		removeListItem(index);
 		$(this).parent().remove();
 		noteNum--;
-	};
+	}
 
 	var focusOnInput = function() {
 		$(inputField).focus();
 		focusEventOff();
-	};
+	}
 
 	var focusOffInput = function() {
 		$(inputField).focus();
 		focusEventOff();
-	};
+	}
 
 	var resetNoteInput = function() {
 		inputField.val('');
-	};
+	}
 
 	return {
 		init: function() {
@@ -104,8 +108,8 @@ window.notes = function() {
 				inputField = $('input#notes-input');
 				notesList = $('#notes-list');
 
-				getListItems();
 				focusOnInput();
+				parseListItems();
 				
 				inputField.on('keypress', function(e){
 					focusOnInput();
